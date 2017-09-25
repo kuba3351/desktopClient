@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <CheckBox fx:id="securityEnabled" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Aktywuj dodatkowe zabezpieczenia serwera" />
+      <Label layoutX="14.0" layoutY="48.0" text="Nazwa użytkownika:" />
+      <Label layoutX="100.0" layoutY="82.0" text="Hasło:" />
+      <TextField fx:id="userName" layoutX="144.0" layoutY="43.0" />
+      <PasswordField fx:id="password" layoutX="144.0" layoutY="77.0" />
+      <Label layoutX="14.0" layoutY="121.0" text="Serwer nie udostępnia hasła ze względów bezpieczeństwa. &#10;Aby zmienić hasło, wpisz nowe hasło do pola tekstowego i kliknij &quot;Zastosuj&quot; lub &quot;Ok&quot;." />
+   </children>
+</AnchorPane>

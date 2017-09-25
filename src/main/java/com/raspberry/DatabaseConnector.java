@@ -7,10 +7,16 @@ public class DatabaseConnector implements LoadingTask {
 
     private static DatabaseConnector instance;
 
+    private volatile boolean finished = false;
+
     public static DatabaseConnector getInstance() {
         if(instance == null)
             instance = new DatabaseConnector();
         return instance;
+    }
+
+    private DatabaseConnector() {
+
     }
 
     @Override
@@ -34,7 +40,13 @@ public class DatabaseConnector implements LoadingTask {
                 alert.setContentText("Zapisywanie zdjęć w bazie danych jest włączone, ale serwer nie mógł się z nią połączyć.\n" +
                         "Skoryguj ustawienia lub wyłącz zapisywanie zdjęć w bazie przed przystąpieniem do robienia zdjęć.");
                 alert.showAndWait();
+                finished = true;
             });
         }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
     }
 }

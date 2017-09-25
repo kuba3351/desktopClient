@@ -8,6 +8,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +31,29 @@ public class HelloController implements Initializable{
     @FXML
     private Label taskLabel;
 
+    private List<LoadingTask> tasks;
+
+    private boolean haveSplashImage;
+
+    private CallbackInterface callback;
+
+    public HelloController(List<LoadingTask> tasks, boolean haveSplashImage, CallbackInterface callback) {
+        this.tasks = tasks;
+        this.haveSplashImage = haveSplashImage;
+        this.callback = callback;
+    }
+
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        splashImage.setImage(new Image(HelloController.class
-                .getResourceAsStream("/images/raspberry.jpg")));
+        if(haveSplashImage) {
+            splashImage.setImage(new Image(HelloController.class
+                    .getResourceAsStream("/images/raspberry.jpg")));
+        }
         Thread loading = new Thread(() -> {
-            List<LoadingTask> tasks = Arrays
-                    .asList(AutoDiscoveryRunner.getInstance(),
-                            RabbitConnector.getInstance(),
-                            ServerStateService.getInstance(),
-                            SecurityService.getInstance(),
-                            DatabaseConnector.getInstance());
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             tasks.forEach(loadingTask -> {
                 if(loadingTask.shouldBeExecuted()) {
                     Platform.runLater(() -> {
@@ -46,9 +61,21 @@ public class HelloController implements Initializable{
                         loadingProgress.setProgress(((double)tasks.indexOf(loadingTask) + 1d) / (double)tasks.size());
                     });
                     loadingTask.execute();
+                    while (!loadingTask.isFinished()) {
+
+                    }
                 }
             });
+            Platform.runLater(() -> {
+                ((Stage)taskLabel.getScene().getWindow()).close();
+                callback.callback();
+            });
         });
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         loading.start();
     }
 }

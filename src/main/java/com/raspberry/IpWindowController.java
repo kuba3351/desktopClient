@@ -18,6 +18,7 @@ public class IpWindowController {
 
     public void onOkButtonClick() {
         AutoDiscovery.getInstance().setRaspberryIpAddress(ipTextField.getText());
+        AutoDiscoveryRunner.getInstance().setFinished(true);
         close();
     }
 }

@@ -18,6 +18,8 @@ public class ServerStateService implements LoadingTask {
 
     private static ServerStateService instance;
 
+    private volatile boolean finished = false;
+
     public static ServerStateService getInstance() {
         if(instance == null)
             instance = new ServerStateService();
@@ -56,5 +58,11 @@ public class ServerStateService implements LoadingTask {
                     "Aby wyjść z trybu hotspota i przyłączyć raspberry do istniejącej sieci, otwórz ustawienia.");
             alert.showAndWait();
         }
+        finished = true;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
     }
 }

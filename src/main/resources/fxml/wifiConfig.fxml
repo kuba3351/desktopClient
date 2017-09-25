@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <CheckBox fx:id="hotspotMode" layoutX="26.0" layoutY="155.0" mnemonicParsing="false" text="Uruchom tryb hotspota" />
+      <Label layoutX="27.0" layoutY="190.0" text="Nazwa sieci:" />
+      <Label layoutX="65.0" layoutY="224.0" text="Hasło:" />
+      <Label fx:id="networkName" layoutX="110.0" layoutY="190.0" text="(nie wybrano)" />
+      <PasswordField fx:id="password" layoutX="113.0" layoutY="219.0" />
+      <TableView fx:id="visibleWifi" layoutX="26.0" layoutY="14.0" prefHeight="128.0" prefWidth="550.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="C1" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+      <Label layoutX="26.0" layoutY="260.0" text="Serwer nie udostępnia hasła ze względów bezpieczeństwa. &#10;Aby zmienić hasło, wpisz nowe hasło do pola tekstowego, i kliknij &quot;Zastosuj&quot; lub &quot;Ok&quot;." />
+      <Button layoutX="477.0" layoutY="159.0" mnemonicParsing="false" onAction="#onRefreshNetworksButtonClick" text="Odśwież sieci" />
+   </children>
+</AnchorPane>

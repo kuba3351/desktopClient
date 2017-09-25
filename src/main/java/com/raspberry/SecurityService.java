@@ -8,7 +8,6 @@ import jdk.internal.util.xml.impl.ReaderUTF8;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.CharsetEncoder;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -19,7 +18,13 @@ import java.util.concurrent.TimeUnit;
 
 public class SecurityService implements LoadingTask {
 
-    private volatile UsernameAndPasswordDTO usernameAndPasswordDTO;
+    private UsernameAndPasswordDTO usernameAndPasswordDTO;
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    private volatile boolean finished = false;
 
     private String token;
 
@@ -60,17 +65,22 @@ public class SecurityService implements LoadingTask {
 
     @Override
     public void execute() {
-        Platform.runLater(() -> {
-            Utils.openNewWindow("/fxml/UsernameAndPassword.fxml", new UsernameAndPasswordController(), "Wpisz dane logowania", false, true);
-        });
-        while (usernameAndPasswordDTO == null) {
-
+        if(usernameAndPasswordDTO == null) {
+            Platform.runLater(() -> Utils.openNewWindow("/fxml/UsernameAndPassword.fxml", new UsernameAndPasswordController(), "Wpisz dane logowania", false, true));
         }
-        refreshToken();
-        ScheduledExecutorService scheduler =
-                Executors.newScheduledThreadPool(1);
-        scheduler
-                .scheduleAtFixedRate(this::refreshToken, 150, 150, TimeUnit.SECONDS);
+        else {
+            refreshToken();
+            ScheduledExecutorService scheduler =
+                    Executors.newScheduledThreadPool(1);
+            scheduler
+                    .scheduleAtFixedRate(this::refreshToken, 150, 150, TimeUnit.SECONDS);
+            finished = true;
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
     }
 
     private void refreshToken() {
@@ -149,15 +159,18 @@ public class SecurityService implements LoadingTask {
             reader = new BufferedReader(new ReaderUTF8(inputStream));
         } catch (KeyManagementException | KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException ex) {
             ex.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Błąd");
-            alert.setHeaderText("Błąd połączenia z serwerem");
-            if (ex instanceof IOException)
-                alert.setContentText("Wystąpił błąd połączenia z serwerem. Być może konieczne jet uaktualnienie klienta lub serwera do nowszej wersji.");
-            else
-                alert.setContentText("Wystąpił problem podczas weryfikacji certyfikatu. Przyczyną może być uszkodzenie pliku z certyfikatem dostarczonego wraz z klientem lub próba przechwycenia komunikacji między klientem i serwerem.");
-            alert.showAndWait();
-            System.exit(0);
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Błąd");
+                alert.setHeaderText("Błąd połączenia z serwerem");
+                if (ex instanceof IOException)
+                    alert.setContentText("Wystąpił błąd połączenia z serwerem. Przyczyn może być wiele. Jeśli błąd wystąpił po podaniu danych autoryzacyjnych, sprawdź ich poprawność.");
+                else
+                    alert.setContentText("Wystąpił problem podczas weryfikacji certyfikatu. Przyczyną może być uszkodzenie pliku z certyfikatem dostarczonego wraz z klientem lub próba przechwycenia komunikacji między klientem i serwerem.");
+                alert.showAndWait();
+                System.exit(0);
+            });
+
         }
         token = new Gson().fromJson(reader, UsernameAndPasswordDTO.class).getToken();
     }

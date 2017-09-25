@@ -1,6 +1,7 @@
 package com.raspberry;
 
 import com.rabbitmq.client.*;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
 import java.io.IOException;
@@ -10,10 +11,16 @@ public class RabbitConnector implements LoadingTask {
 
     private static RabbitConnector instance;
 
+    private volatile boolean finished = false;
+
     public static RabbitConnector getInstance() {
         if(instance == null)
             instance = new RabbitConnector();
         return instance;
+    }
+
+    private RabbitConnector() {
+
     }
 
     @Override
@@ -40,14 +47,22 @@ public class RabbitConnector implements LoadingTask {
             channel = connection.createChannel();
             channel.queueDeclare("test", true, false, false, null);
             channel.basicConsume("test", true, new EventListener());
+            finished = true;
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Błąd");
-            alert.setHeaderText("Błąd kolejki eventów");
-            alert.setContentText("Połączenie z kolejką eventów nie powiodło się. Nie wszystko będzie działać prawidłowo.");
-            alert.showAndWait();
-            System.exit(0);
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Błąd");
+                alert.setHeaderText("Błąd kolejki eventów");
+                alert.setContentText("Połączenie z kolejką eventów nie powiodło się. Nie wszystko będzie działać prawidłowo.");
+                alert.showAndWait();
+                finished = true;
+            });
         }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
     }
 }

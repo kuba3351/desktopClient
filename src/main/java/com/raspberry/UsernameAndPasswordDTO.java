@@ -1,7 +1,7 @@
 package com.raspberry;
 
 public class UsernameAndPasswordDTO {
-    private Boolean isEnabled;
+    private Boolean enabled;
     private String username;
     private String password;
     private String token;
@@ -15,11 +15,11 @@ public class UsernameAndPasswordDTO {
     }
 
     public Boolean getEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(Boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
     }
 
     public String getUsername() {

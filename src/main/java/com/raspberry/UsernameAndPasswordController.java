@@ -25,7 +25,9 @@ public class UsernameAndPasswordController {
         UsernameAndPasswordDTO usernameAndPasswordDTO = new UsernameAndPasswordDTO();
         usernameAndPasswordDTO.setUsername(login.getText());
         usernameAndPasswordDTO.setPassword(password.getText());
-        SecurityService.getInstance().setUsernameAndPasswordDTO(usernameAndPasswordDTO);
+        SecurityService securityService = SecurityService.getInstance();
+        securityService.setUsernameAndPasswordDTO(usernameAndPasswordDTO);
+        securityService.setFinished(true);
         close();
     }
 }

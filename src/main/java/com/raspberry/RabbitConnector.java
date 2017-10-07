@@ -41,7 +41,7 @@ public class RabbitConnector implements LoadingTask {
         factory.setUsername("pi");
         factory.setPassword("raspberry");
         Connection connection;
-        Channel channel = null;
+        Channel channel;
         try {
             connection = factory.newConnection();
             channel = connection.createChannel();

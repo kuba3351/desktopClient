@@ -1,5 +1,6 @@
 package com.raspberry;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jdk.internal.util.xml.impl.ReaderUTF8;
 
@@ -48,17 +49,24 @@ public class ServerStateService implements LoadingTask {
 
     @Override
     public void execute() {
+        refreshOverallState();
+        if(overalStateDTO.getHotspotEnabled()) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Informacja");
+                alert.setHeaderText("Tryb hotspota");
+                alert.setContentText("Raspberry znajduje się w trybie hotspota.\n" +
+                        "Aby wyjść z trybu hotspota i przyłączyć raspberry do istniejącej sieci, otwórz ustawienia.");
+                alert.showAndWait();
+                finished = true;
+            });
+        }
+        else finished = true;
+    }
+
+    public void refreshOverallState() {
         overalStateDTO = (OveralStateDTO)Utils.getDTOFromServer("/getAppStatus",
                 OveralStateDTO.class);
-        if(overalStateDTO.getHotspotEnabled()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Informacja");
-            alert.setHeaderText("Tryb hotspota");
-            alert.setContentText("Raspberry znajduje się w trybie hotspota.\n" +
-                    "Aby wyjść z trybu hotspota i przyłączyć raspberry do istniejącej sieci, otwórz ustawienia.");
-            alert.showAndWait();
-        }
-        finished = true;
     }
 
     @Override

@@ -22,7 +22,7 @@ public class MainApp extends Application {
                                 ServerStateService.getInstance(),
                                 SecurityService.getInstance(),
                                 SecurityService.getInstance(),
-                                DatabaseConnector.getInstance()), true, () -> Utils.openNewWindow("/fxml/mainWindow.fxml", new MainWindowController(), "Okno główne", false, false)),
-                "Ładowanie...", true, true);
+                                DatabaseConnector.getInstance()), true, () -> Utils.openNewWindow("/fxml/mainWindow.fxml", MainWindowController.getInstance(), "Okno główne", false, false, null)),
+                "Ładowanie...", true, true, null);
     }
 }

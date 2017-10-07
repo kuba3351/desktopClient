@@ -35,6 +35,13 @@ public class EventListener implements Consumer {
 
     @Override
     public void handleDelivery(String s, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) throws IOException {
-
+        String string = new String(bytes);
+        MainWindowController controller = MainWindowController.getInstance();
+        if(controller.isInitialized()) {
+            if (string.equals("Taking photo..."))
+                controller.onStartPhoto();
+            else if (string.equals("Photo taken!"))
+                controller.onPhotoFinished();
+        }
     }
 }

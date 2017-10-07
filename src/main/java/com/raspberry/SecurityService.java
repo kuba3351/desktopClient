@@ -66,7 +66,7 @@ public class SecurityService implements LoadingTask {
     @Override
     public void execute() {
         if(usernameAndPasswordDTO == null) {
-            Platform.runLater(() -> Utils.openNewWindow("/fxml/UsernameAndPassword.fxml", new UsernameAndPasswordController(), "Wpisz dane logowania", false, true));
+            Platform.runLater(() -> Utils.openNewWindow("/fxml/UsernameAndPassword.fxml", new UsernameAndPasswordController(), "Wpisz dane logowania", false, true, null));
         }
         else {
             refreshToken();
@@ -83,7 +83,7 @@ public class SecurityService implements LoadingTask {
         return finished;
     }
 
-    private void refreshToken() {
+    public void refreshToken() {
         KeyStore p12;
         Enumeration e;
         HttpsURLConnection httpsURLConnection;
@@ -172,6 +172,7 @@ public class SecurityService implements LoadingTask {
             });
 
         }
-        token = new Gson().fromJson(reader, UsernameAndPasswordDTO.class).getToken();
+        if(ServerStateService.getInstance().getOveralStateDTO().getSecurityEnabled())
+            token = new Gson().fromJson(reader, UsernameAndPasswordDTO.class).getToken();
     }
 }

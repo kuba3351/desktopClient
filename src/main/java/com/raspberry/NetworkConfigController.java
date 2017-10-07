@@ -1,6 +1,7 @@
 package com.raspberry;
 
 import com.google.gson.internal.LinkedTreeMap;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,7 +18,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class NetworkConfigController implements Initializable, LoadingTask {
+public class NetworkConfigController implements Initializable, LoadingTask, Clearable {
+
     @FXML
     private CheckBox hotspotMode;
 
@@ -29,6 +31,9 @@ public class NetworkConfigController implements Initializable, LoadingTask {
 
     @FXML
     private PasswordField password;
+
+    @FXML
+    private Label settingsChangedLabel;
 
     private volatile boolean finished = false;
 
@@ -76,6 +81,7 @@ public class NetworkConfigController implements Initializable, LoadingTask {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        settingsChangedLabel.setVisible(false);
         TableColumn ssid = new TableColumn("Nazwa");
         ssid.setMinWidth(150);
         ssid.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
@@ -106,35 +112,69 @@ public class NetworkConfigController implements Initializable, LoadingTask {
             }
         });
 
-        visibleWifi.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                String name = networkViewDTOS.get(t1.intValue()).get("ssid").toString();
-                networkName.setText(name);
-                networkDTO.setSsid(name);
-            }
+        visibleWifi.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> {
+            String name = networkViewDTOS.get(t1.intValue()).get("ssid").toString();
+            networkName.setText(name);
+            networkDTO.setSsid(name);
+            settingsChanged();
         });
         visibleWifi.getColumns().clear();
         visibleWifi.getColumns().addAll(ssid, bars, security);
         visibleWifi.getItems().addAll(networkViewDTOS);
+        password.textProperty().addListener((observableValue, s, t1) -> {
+            networkDTO.setPassword(password.getText());
+            settingsChanged();
+            password.setPromptText("(puste)");
+        });
+        hotspotMode.setSelected(hotspotEnabled);
+        hotspotMode.selectedProperty().addListener((observableValue, aBoolean, t1) -> settingsChanged());
     }
 
     @Override
     public boolean shouldBeExecuted() {
-        return true;
+        return networkDTO == null || settingsChangedLabel.isVisible();
     }
 
     @Override
     public String getTaskName() {
-        return "Wczytuję konfigurację sieci...";
+        if(networkDTO == null)
+            return "Wczytuję konfigurację sieci...";
+        else if(hotspotMode.isSelected())
+            return "Stawiam hotspota...";
+        else return "Przełączam do innej sieci...";
     }
 
     @Override
     public void execute() {
-        networkDTO = (NetworkDTO)Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
-        hotspotEnabled = ServerStateService.getInstance().getOveralStateDTO().getHotspotEnabled();
-        networkViewDTOS = (ArrayList<LinkedTreeMap>)Utils.getDTOFromServer("/api/network/checkAvailableWifi", ArrayList.class);
-        finished = true;
+        if(networkDTO == null) {
+            networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
+            hotspotEnabled = ServerStateService.getInstance().getOveralStateDTO().getHotspotEnabled();
+            networkViewDTOS = (ArrayList<LinkedTreeMap>) Utils.getDTOFromServer("/api/network/checkAvailableWifi", ArrayList.class);
+            finished = true;
+        }
+        else {
+            if(!hotspotMode.isSelected() && !Utils.saveDtoToServer("/api/network/connectToNetwork", networkDTO)) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Błąd");
+                    alert.setHeaderText("Błąd komunikacji z serwerem");
+                    alert.setContentText("Nie udało się przetworzyć ządania przełączenia do innej sieci.");
+                    alert.showAndWait();
+                    finished = true;
+                });
+            }
+            else if(hotspotMode.isSelected() && !Utils.performActionOnServer("/api/network/enableHotspot")) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Błąd");
+                    alert.setHeaderText("Błąd komunikacji z serwerem");
+                    alert.setContentText("Nie udało się przetworzyć ządania uruchomienia hotspota.");
+                    alert.showAndWait();
+                    finished = true;
+                });
+            }
+            else finished = true;
+        }
     }
 
     @Override
@@ -156,5 +196,19 @@ public class NetworkConfigController implements Initializable, LoadingTask {
                 return null;
             }
         });
+    }
+
+    public boolean areSettingsChanged() {
+        return settingsChangedLabel.visibleProperty().get();
+    }
+
+    private void settingsChanged() {
+        settingsChangedLabel.setVisible(true);
+    }
+
+    @Override
+    public void clear() {
+        networkDTO = null;
+        finished = false;
     }
 }

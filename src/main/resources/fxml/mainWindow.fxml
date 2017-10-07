@@ -20,12 +20,16 @@
       <Button layoutX="292.0" layoutY="295.0" mnemonicParsing="false" onAction="#onTakePhotoClick" text="Zrób zdjęcie" />
       <Button layoutX="413.0" layoutY="295.0" mnemonicParsing="false" onAction="#onOpenSettingsClick" text="Otwórz ustawienia" />
       <Label layoutX="14.0" layoutY="233.0" text="Czasomierz:" />
-      <Label fx:id="timeLabek" layoutX="13.0" layoutY="242.0" text="00:00:00" textFill="#1409dd">
+      <Label fx:id="timeLabel" layoutX="13.0" layoutY="242.0" text="00:00:00" textFill="#1409dd">
          <font>
             <Font size="38.0" />
          </font>
       </Label>
       <ProgressIndicator fx:id="progress" layoutX="368.0" layoutY="116.0" progress="0.0" />
       <Label fx:id="photoLabel" layoutX="317.0" layoutY="169.0" text="Jeszcze nie zrobiono zdjęcia" />
+      <Label fx:id="ipLabel" layoutX="14.0" layoutY="215.0" text="Adres Ip serwera: " />
+      <Button fx:id="startStopButton" layoutX="22.0" layoutY="295.0" mnemonicParsing="false" onAction="#onStartStopButtonClick" text="Start" />
+      <Button layoutX="84.0" layoutY="295.0" mnemonicParsing="false" onAction="#onTimeSettingsClick" text="Ustaw czas" />
+      <ProgressIndicator fx:id="timeProgress" layoutX="68.0" layoutY="254.0" prefHeight="21.0" prefWidth="18.0" progress="0.0" />
    </children>
 </AnchorPane>

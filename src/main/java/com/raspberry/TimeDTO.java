@@ -116,13 +116,13 @@ public class TimeDTO {
 
     @Override
     public String toString() {
-        return ((hours >= 10) ?
-                hours : "0" + hours)
+        return ((reamingHours >= 10) ?
+                reamingHours : "0" + reamingHours)
                 + ":"
-                + ((minutes >= 10) ?
-                minutes : "0" + minutes)
+                + ((reamingMinutes >= 10) ?
+                reamingMinutes : "0" + reamingMinutes)
                 + ":"
-                + ((seconds >= 10) ?
-                seconds : "0" + seconds);
+                + ((reamingSeconds >= 10) ?
+                reamingSeconds : "0" + reamingSeconds);
     }
 }

@@ -1,5 +1,14 @@
 package com.raspberry;
 
+import com.raspberry.dto.TimeDTO;
+import com.raspberry.interfaces.Clearable;
+import com.raspberry.interfaces.LoadingTask;
+import com.raspberry.loading.AutoDiscovery;
+import com.raspberry.loading.HelloController;
+import com.raspberry.loading.RabbitConnector;
+import com.raspberry.loading.ServerStateService;
+import com.raspberry.settings.*;
+import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -12,20 +21,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class MainWindowController implements Initializable {
 
     @FXML
-    private ImageView preview;
+    private ImageView preview1;
+
+    @FXML
+    private ImageView preview2;
 
     @FXML
     private Label photoLabel;
@@ -90,15 +101,40 @@ public class MainWindowController implements Initializable {
     public void onTakePhotoClick() {
         photoLabel.setVisible(false);
         progress.setVisible(true);
-        preview.setVisible(false);
+        preview1.setVisible(false);
+        preview2.setVisible(false);
         Thread thread = new Thread(() -> {
-            InputStream photoInputStream = Utils.getInputStreamFromServer("/api/takePhoto");
-            Image image = new Image(photoInputStream);
-            if(photoInputStream != null) {
-                Platform.runLater(() -> {
+            ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/takePhoto"));
+            ZipEntry entity;
+            Image image = null;
+            Image image2 = null;
+            try {
+                while ((entity = zipInputStream.getNextEntry()) != null) {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    copyStream(zipInputStream, byteArrayOutputStream);
+                    zipInputStream.closeEntry();
+                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                    switch (entity.getName()) {
+                        case "camera1.jpg":
+                            image = new Image(byteArrayInputStream);
+                            break;
+                        case "camera2.jpg":
+                            image2 = new Image(byteArrayInputStream);
+                            break;
+                    }
+                }
+                zipInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Image finalImage = image;
+            Image finalImage1 = image2;
+            Platform.runLater(() -> {
                     progress.setVisible(false);
-                    preview.setImage(image);
-                    preview.setVisible(true);
+                    preview1.setImage(finalImage);
+                    preview2.setImage(finalImage1);
+                    preview1.setVisible(true);
+                    preview2.setVisible(true);
                 });
                 if (ServerStateService.getInstance().getOveralStateDTO().getJpgComputerSaveEnabled()) {
                     String separator = null;
@@ -109,7 +145,9 @@ public class MainWindowController implements Initializable {
                     else if(system.contains("Win") || system.contains("win"))
                         separator = "\\";
                     try {
-                        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "jpg", new File(jpgLocation+separator+ LocalDateTime.now().toString()));
+                        String date = LocalDateTime.now().toString();
+                        ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation+separator+ date+"-camera1.jpg"));
+                        ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation+separator+ date+"-camera2.jpg"));
                     } catch (IOException e) {
                         e.printStackTrace();
                         Platform.runLater(() -> {
@@ -121,10 +159,35 @@ public class MainWindowController implements Initializable {
                         });
                     }
                 }
-            }
-
         });
         thread.start();
+    }
+
+    public void onUpButtonClick() throws IOException {
+        System.out.println("sending up");
+        RabbitConnector.getInstance().send("up");
+    }
+
+    public void onDownButtonClick() throws IOException {
+        RabbitConnector.getInstance().send("down");
+    }
+
+    public void onLeftButtonClick() throws IOException {
+        RabbitConnector.getInstance().send("left");
+    }
+
+    public void onRightButtonClick() throws IOException {
+        RabbitConnector.getInstance().send("right");
+    }
+
+    public void onStopButtonClick() throws IOException {
+        RabbitConnector.getInstance().send("stop");
+    }
+
+    private void copyStream(ZipInputStream inputStream, OutputStream outputStream) throws IOException {
+        for (int c = inputStream.read(); c != -1; c = inputStream.read()) {
+            outputStream.write(c);
+        }
     }
 
     public void onStartStopButtonClick() {
@@ -155,18 +218,45 @@ public class MainWindowController implements Initializable {
     public void onStartPhoto() {
         Platform.runLater(() -> {
             photoLabel.setVisible(false);
-            preview.setVisible(false);
+            preview1.setVisible(false);
+            preview2.setVisible(false);
             progress.setVisible(true);
         });
     }
 
     public void onPhotoFinished() {
         timeDTO.reset();
-        Image image = new Image(Utils.getInputStreamFromServer("/api/getLastPhoto"));
+        ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/takePhoto"));
+        ZipEntry entity;
+        Image image = null;
+        Image image2 = null;
+        try {
+            while ((entity = zipInputStream.getNextEntry()) != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                copyStream(zipInputStream, byteArrayOutputStream);
+                zipInputStream.closeEntry();
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                switch (entity.getName()) {
+                    case "camera1.jpg":
+                        image = new Image(byteArrayInputStream);
+                        break;
+                    case "camera2.jpg":
+                        image2 = new Image(byteArrayInputStream);
+                        break;
+                }
+            }
+            zipInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Image finalImage = image;
+        Image finalImage1 = image2;
         Platform.runLater(() -> {
             progress.setVisible(false);
-            preview.setImage(image);
-            preview.setVisible(true);
+            preview1.setImage(finalImage);
+            preview2.setImage(finalImage1);
+            preview1.setVisible(true);
+            preview2.setVisible(true);
         });
         if (ServerStateService.getInstance().getOveralStateDTO().getJpgComputerSaveEnabled()) {
             String separator = null;
@@ -177,7 +267,9 @@ public class MainWindowController implements Initializable {
             else if(system.contains("Win") || system.contains("win"))
                 separator = "\\";
             try {
-                ImageIO.write(SwingFXUtils.fromFXImage(preview.getImage(), null), "jpg", new File(jpgLocation+separator+ LocalDateTime.now().toString()));
+                String date = LocalDateTime.now().toString();
+                ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation+separator+date+"-camera1.jpg"));
+                ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation+separator+date+"-camera2.jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {

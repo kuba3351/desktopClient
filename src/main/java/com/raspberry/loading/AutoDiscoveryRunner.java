@@ -69,7 +69,7 @@ public class AutoDiscoveryRunner implements LoadingTask {
                 });
                 if(response.getText().equals("Tak"))
                     Utils.openNewWindow("/fxml/ipAddress.fxml",
-                            new IpWindowController(), "Podaj adres ip",
+                            new RaspberryIpWindowController(), "Podaj adres ip",
                             false, true, null);
                 else
                     System.exit(0);

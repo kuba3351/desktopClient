@@ -69,14 +69,11 @@ public class DatabaseSettingsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         settingsChangedLabel.setVisible(false);
-        databaseType.getItems().addAll(DatabaseType.POSTGRES, DatabaseType.MYSQL, DatabaseType.ORACLE);
+        databaseType.getItems().addAll(DatabaseType.POSTGRES, DatabaseType.MYSQL);
         databaseType.setValue(databaseConfigDTO.getDatabaseType());
-        databaseType.valueProperty().addListener(new ChangeListener<DatabaseType>() {
-            @Override
-            public void changed(ObservableValue<? extends DatabaseType> observableValue, DatabaseType databaseType, DatabaseType t1) {
-                databaseConfigDTO.setDatabaseType(t1);
-                settingsChanged();
-            }
+        databaseType.valueProperty().addListener((observableValue, databaseType, t1) -> {
+            databaseConfigDTO.setDatabaseType(t1);
+            settingsChanged();
         });
         host.setText(databaseConfigDTO.getHost());
         host.textProperty().addListener((observableValue, eventHandler, t1) -> {

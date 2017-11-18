@@ -1,16 +1,41 @@
 package com.raspberry.dto;
 
-import java.io.File;
-
 public class OveralStateDTO {
     private Boolean securityEnabled;
     private Boolean databaseEnabled;
     private Boolean databaseConnected;
     private Boolean pendriveEnabled;
     private Boolean pendriveConnected;
+    private Boolean pendriveMounted;
     private Boolean hotspotEnabled;
     private Boolean jpgComputerSaveEnabled;
     private String jpgLocation;
+    private Integer cameras;
+    private Boolean robotConnected;
+
+    public Boolean getRobotConnected() {
+        return robotConnected;
+    }
+
+    public void setRobotConnected(Boolean robotConnected) {
+        this.robotConnected = robotConnected;
+    }
+
+    public Boolean getPendriveMounted() {
+        return pendriveMounted;
+    }
+
+    public void setPendriveMounted(Boolean pendriveMounted) {
+        this.pendriveMounted = pendriveMounted;
+    }
+
+    public Integer getCameras() {
+        return cameras;
+    }
+
+    public void setCameras(Integer cameras) {
+        this.cameras = cameras;
+    }
 
     public String getJpgLocation() {
         return jpgLocation;

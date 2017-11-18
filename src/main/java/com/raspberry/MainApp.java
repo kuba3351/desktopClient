@@ -24,6 +24,8 @@ public class MainApp extends Application {
                                 ServerStateService.getInstance(),
                                 SecurityService.getInstance(),
                                 SecurityService.getInstance(),
+                                RobotConnection.getInstance(),
+                                MountPendrive.getInstance(),
                                 DatabaseConnector.getInstance()), true, () -> Utils.openNewWindow("/fxml/mainWindow.fxml", MainWindowController.getInstance(), "Okno główne", false, false, null)),
                 "Ładowanie...", true, true, null);
     }

@@ -27,6 +27,7 @@ public class RabbitConnector implements LoadingTask {
     }
 
     public void send(String message) throws IOException {
+        System.out.println("Sending "+message);
         channel.basicPublish("", "test2", null, message.getBytes());
     }
 

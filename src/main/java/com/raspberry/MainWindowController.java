@@ -10,6 +10,8 @@ import com.raspberry.loading.ServerStateService;
 import com.raspberry.settings.*;
 import com.raspberry.utils.Utils;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,55 +34,50 @@ import java.util.zip.ZipInputStream;
 
 public class MainWindowController implements Initializable {
 
+    private static MainWindowController instance;
     @FXML
     private ImageView preview1;
-
     @FXML
     private ImageView preview2;
-
     @FXML
     private Label photoLabel;
-
     @FXML
     private ProgressIndicator progress;
-
     @FXML
     private Label timeLabel;
-
     @FXML
     private Label ipLabel;
-
     @FXML
     private ProgressIndicator timeProgress;
-
     @FXML
     private Button startStopButton;
-
-    public void setTimeDTO(TimeDTO timeDTO) {
-        this.timeDTO = timeDTO;
-        Platform.runLater(() -> timeLabel.setText(timeDTO.toString()));
-    }
-
+    @FXML
+    private Button left;
+    @FXML
+    private Button right;
     private volatile TimeDTO timeDTO;
 
     private Thread timeThread;
 
     private boolean initialized = false;
 
-    public boolean isInitialized() {
-        return initialized;
+    private MainWindowController() {
+
     }
 
-    private static MainWindowController instance;
-
     public static MainWindowController getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new MainWindowController();
         return instance;
     }
 
-    private MainWindowController() {
+    public void setTimeDTO(TimeDTO timeDTO) {
+        this.timeDTO = timeDTO;
+        Platform.runLater(() -> timeLabel.setText(timeDTO.toString()));
+    }
 
+    public boolean isInitialized() {
+        return initialized;
     }
 
     public void onTimeSettingsClick() {
@@ -94,7 +91,7 @@ public class MainWindowController implements Initializable {
                         NetworkConfigController.getInstance());
         Utils.openNewWindow("/fxml/settingsLoading.fxml", new HelloController(tasks,
                 false, () -> Utils.openNewWindow("/fxml/settingsWindow.fxml", new SettingsWindowController(), "Ustawienia", false, false, (event -> {
-                    tasks.stream().map(loadingTask -> (Clearable)loadingTask).forEach(Clearable::clear);
+            tasks.stream().map(loadingTask -> (Clearable) loadingTask).forEach(Clearable::clear);
         }))), "Ładowanie", true, false, null);
     }
 
@@ -130,54 +127,45 @@ public class MainWindowController implements Initializable {
             Image finalImage = image;
             Image finalImage1 = image2;
             Platform.runLater(() -> {
-                    progress.setVisible(false);
-                    preview1.setImage(finalImage);
-                    preview2.setImage(finalImage1);
-                    preview1.setVisible(true);
-                    preview2.setVisible(true);
-                });
-                if (ServerStateService.getInstance().getOveralStateDTO().getJpgComputerSaveEnabled()) {
-                    String separator = null;
-                    String jpgLocation = ServerStateService.getInstance().getOveralStateDTO().getJpgLocation();
-                    String system = System.getProperty("os.name");
-                    if(system.contains("linux") || system.contains("Linux"))
-                        separator = "/";
-                    else if(system.contains("Win") || system.contains("win"))
-                        separator = "\\";
-                    try {
-                        String date = LocalDateTime.now().toString();
-                        ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation+separator+ date+"-camera1.jpg"));
-                        ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation+separator+ date+"-camera2.jpg"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Błąd");
-                            alert.setHeaderText("Błąd zapisu");
-                            alert.setContentText("Nieudało się zapisać zdjęcia do pliku.\nSprawdź lokalizację, uprawnienia do zapisu i ilość wolnego miejsca na dysku.");
-                            alert.showAndWait();
-                        });
-                    }
+                progress.setVisible(false);
+                preview1.setImage(finalImage);
+                preview2.setImage(finalImage1);
+                preview1.setVisible(true);
+                preview2.setVisible(true);
+            });
+            if (ServerStateService.getInstance().getOveralStateDTO().getJpgComputerSaveEnabled()) {
+                String separator = null;
+                String jpgLocation = ServerStateService.getInstance().getOveralStateDTO().getJpgLocation();
+                String system = System.getProperty("os.name");
+                if (system.contains("linux") || system.contains("Linux"))
+                    separator = "/";
+                else if (system.contains("Win") || system.contains("win"))
+                    separator = "\\";
+                try {
+                    String date = LocalDateTime.now().toString();
+                    ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera1.jpg"));
+                    ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera2.jpg"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Błąd");
+                        alert.setHeaderText("Błąd zapisu");
+                        alert.setContentText("Nieudało się zapisać zdjęcia do pliku.\nSprawdź lokalizację, uprawnienia do zapisu i ilość wolnego miejsca na dysku.");
+                        alert.showAndWait();
+                    });
                 }
+            }
         });
         thread.start();
     }
 
     public void onUpButtonClick() throws IOException {
-        System.out.println("sending up");
         RabbitConnector.getInstance().send("up");
     }
 
     public void onDownButtonClick() throws IOException {
         RabbitConnector.getInstance().send("down");
-    }
-
-    public void onLeftButtonClick() throws IOException {
-        RabbitConnector.getInstance().send("left");
-    }
-
-    public void onRightButtonClick() throws IOException {
-        RabbitConnector.getInstance().send("right");
     }
 
     public void onStopButtonClick() throws IOException {
@@ -192,21 +180,19 @@ public class MainWindowController implements Initializable {
 
     public void onStartStopButtonClick() {
         TimeThreadState timeThreadState = timeDTO.getTimeThreadState();
-        if(timeThreadState.equals(TimeThreadState.NEW)) {
+        if (timeThreadState.equals(TimeThreadState.NEW)) {
             Utils.performActionOnServer("/api/time/start");
             Platform.runLater(() -> timeLabel.setDisable(false));
             timeThread.start();
             startStopButton.setText("Stop");
             timeDTO.setTimeThreadState(TimeThreadState.RUNNING);
-        }
-        else if (timeThreadState.equals(TimeThreadState.SUSPENDED)) {
+        } else if (timeThreadState.equals(TimeThreadState.SUSPENDED)) {
             Utils.performActionOnServer("/api/time/start");
             Platform.runLater(() -> timeLabel.setDisable(false));
             timeThread.resume();
             startStopButton.setText("Stop");
             timeDTO.setTimeThreadState(TimeThreadState.RUNNING);
-        }
-        else if (timeThreadState.equals(TimeThreadState.RUNNING)) {
+        } else if (timeThreadState.equals(TimeThreadState.RUNNING)) {
             Utils.performActionOnServer("/api/time/stop");
             Platform.runLater(() -> timeLabel.setDisable(true));
             timeThread.suspend();
@@ -262,14 +248,14 @@ public class MainWindowController implements Initializable {
             String separator = null;
             String jpgLocation = ServerStateService.getInstance().getOveralStateDTO().getJpgLocation();
             String system = System.getProperty("os.name");
-            if(system.contains("linux") || system.contains("Linux"))
+            if (system.contains("linux") || system.contains("Linux"))
                 separator = "/";
-            else if(system.contains("Win") || system.contains("win"))
+            else if (system.contains("Win") || system.contains("win"))
                 separator = "\\";
             try {
                 String date = LocalDateTime.now().toString();
-                ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation+separator+date+"-camera1.jpg"));
-                ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation+separator+date+"-camera2.jpg"));
+                ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera1.jpg"));
+                ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera2.jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
@@ -292,14 +278,14 @@ public class MainWindowController implements Initializable {
         timeProgress.setVisible(true);
         ipLabel.setText(ipLabel.getText() + AutoDiscovery.getInstance().getRaspberryIpAddress());
         Thread thread = new Thread(() -> {
-            timeDTO = (TimeDTO)Utils.getDTOFromServer("/api/time", TimeDTO.class);
+            timeDTO = (TimeDTO) Utils.getDTOFromServer("/api/time", TimeDTO.class);
             Platform.runLater(() -> {
                 timeProgress.setVisible(false);
                 timeLabel.setText(timeDTO.toString());
                 timeLabel.setVisible(true);
                 timeLabel.setDisable(!timeDTO.getTimeThreadState().equals(TimeThreadState.RUNNING));
             });
-            if(timeDTO.getTimeThreadState().equals(TimeThreadState.RUNNING)) {
+            if (timeDTO.getTimeThreadState().equals(TimeThreadState.RUNNING)) {
                 timeThread.start();
                 Platform.runLater(() -> startStopButton.setText("Stop"));
             }
@@ -316,6 +302,26 @@ public class MainWindowController implements Initializable {
                     timeLabel.setText(timeDTO.toString());
                 });
                 timeDTO.tick();
+            }
+        });
+        left.pressedProperty().addListener((observableValue, aBoolean, t1) -> {
+            try {
+                if (t1)
+                    RabbitConnector.getInstance().send("left");
+                else
+                    RabbitConnector.getInstance().send("leftReleased");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        right.pressedProperty().addListener((observableValue, aBoolean, t1) -> {
+            try {
+                if (t1)
+                    RabbitConnector.getInstance().send("right");
+                else
+                    RabbitConnector.getInstance().send("rightReleased");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         initialized = true;

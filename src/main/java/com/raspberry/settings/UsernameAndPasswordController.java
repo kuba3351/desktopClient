@@ -1,12 +1,15 @@
 package com.raspberry.settings;
 
-import com.raspberry.loading.SecurityService;
 import com.raspberry.dto.UsernameAndPasswordDTO;
+import com.raspberry.loading.SecurityService;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Kontroler odpowiedzialny za okienko logowania pojawiające się gdy API jest zabezpieczone
+ */
 public class UsernameAndPasswordController {
     @FXML
     private TextField login;
@@ -15,7 +18,7 @@ public class UsernameAndPasswordController {
     private PasswordField password;
 
     private void close() {
-        ((Stage)login.getScene().getWindow()).close();
+        ((Stage) login.getScene().getWindow()).close();
     }
 
     public void onCancelButtonClick() {

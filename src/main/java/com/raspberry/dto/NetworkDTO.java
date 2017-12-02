@@ -1,5 +1,8 @@
 package com.raspberry.dto;
 
+/**
+ * Klasa służąca do transferu ustawień połączenia wi-di
+ */
 public class NetworkDTO {
     private String ssid;
     private String password;

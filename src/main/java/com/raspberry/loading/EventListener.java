@@ -5,9 +5,14 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.raspberry.MainWindowController;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 
+/**
+ * Klasa odpowiedzialna za odbiór komunikatów z serwera za pomocą RabbitMQ
+ */
 public class EventListener implements Consumer {
     @Override
     public void handleConsumeOk(String s) {
@@ -37,9 +42,17 @@ public class EventListener implements Consumer {
     @Override
     public void handleDelivery(String s, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) throws IOException {
         String string = new String(bytes);
-        System.out.println("Got message:"+string);
+        if(string.startsWith("[ERROR]")) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Błąd");
+                alert.setHeaderText("Błąd zapisu danych");
+                alert.setContentText(string.substring(7));
+                alert.show();
+            });
+        }
         MainWindowController controller = MainWindowController.getInstance();
-        if(controller.isInitialized()) {
+        if (controller.isInitialized()) {
             if (string.equals("Taking photo..."))
                 controller.onStartPhoto();
             else if (string.equals("Photo taken!"))

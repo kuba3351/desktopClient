@@ -1,5 +1,8 @@
 package com.raspberry.dto;
 
+/**
+ * Klasa służąca do transferu informacji o ogólnym stanie systemu na serwerze
+ */
 public class OveralStateDTO {
     private Boolean securityEnabled;
     private Boolean databaseEnabled;

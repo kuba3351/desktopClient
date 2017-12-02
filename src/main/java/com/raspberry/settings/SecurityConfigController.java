@@ -1,10 +1,10 @@
 package com.raspberry.settings;
 
-import com.raspberry.loading.SecurityService;
-import com.raspberry.utils.Utils;
 import com.raspberry.dto.UsernameAndPasswordDTO;
 import com.raspberry.interfaces.Clearable;
 import com.raspberry.interfaces.LoadingTask;
+import com.raspberry.loading.SecurityService;
+import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,23 +13,32 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Kontroler odpowiedzialny za ustawienia zabezpieczeń API
+ */
 public class SecurityConfigController implements Initializable, LoadingTask, Clearable {
 
+    private static SecurityConfigController instance;
     @FXML
     private CheckBox securityEnabled;
-
     @FXML
     private TextField userName;
-
     @FXML
     private PasswordField password;
-
     @FXML
     private Label settingsChangedLabel;
-
     private UsernameAndPasswordDTO usernameAndPasswordDTO;
-
     private volatile boolean finished = false;
+
+    private SecurityConfigController() {
+
+    }
+
+    public static SecurityConfigController getInstance() {
+        if (instance == null)
+            instance = new SecurityConfigController();
+        return instance;
+    }
 
     public UsernameAndPasswordDTO getUsernameAndPasswordDTO() {
         return usernameAndPasswordDTO;
@@ -37,18 +46,6 @@ public class SecurityConfigController implements Initializable, LoadingTask, Cle
 
     public void setUsernameAndPasswordDTO(UsernameAndPasswordDTO usernameAndPasswordDTO) {
         this.usernameAndPasswordDTO = usernameAndPasswordDTO;
-    }
-
-    private static SecurityConfigController instance;
-
-    public static SecurityConfigController getInstance() {
-        if(instance == null)
-            instance = new SecurityConfigController();
-        return instance;
-    }
-
-    private SecurityConfigController() {
-
     }
 
     public boolean areSettingsChanged() {
@@ -90,12 +87,11 @@ public class SecurityConfigController implements Initializable, LoadingTask, Cle
 
     @Override
     public void execute() {
-        if(usernameAndPasswordDTO == null) {
+        if (usernameAndPasswordDTO == null) {
             usernameAndPasswordDTO = (UsernameAndPasswordDTO) Utils.getDTOFromServer("/api/getAuthInfo", UsernameAndPasswordDTO.class);
             finished = true;
-        }
-        else {
-            if(!Utils.saveDtoToServer("/api/saveAuthInfo", usernameAndPasswordDTO)) {
+        } else {
+            if (!Utils.saveDtoToServer("/api/saveAuthInfo", usernameAndPasswordDTO)) {
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Błąd");
@@ -104,8 +100,7 @@ public class SecurityConfigController implements Initializable, LoadingTask, Cle
                     alert.showAndWait();
                     finished = true;
                 });
-            }
-            else finished = true;
+            } else finished = true;
             SecurityService securityService = SecurityService.getInstance();
             securityService.setUsernameAndPasswordDTO(usernameAndPasswordDTO);
         }

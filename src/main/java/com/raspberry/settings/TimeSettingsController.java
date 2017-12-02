@@ -1,9 +1,9 @@
 package com.raspberry.settings;
 
 import com.raspberry.MainWindowController;
+import com.raspberry.dto.TimeDTO;
 import com.raspberry.utils.SpinnerValues;
 import com.raspberry.utils.Utils;
-import com.raspberry.dto.TimeDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Spinner;
@@ -12,6 +12,9 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Kontroler odpowiedzialny za okienko z ustawieniami czasomierza
+ */
 public class TimeSettingsController implements Initializable {
 
     @FXML
@@ -33,7 +36,7 @@ public class TimeSettingsController implements Initializable {
     }
 
     private void close() {
-        ((Stage)hour.getScene().getWindow()).close();
+        ((Stage) hour.getScene().getWindow()).close();
     }
 
     public void onCancelButtonClick() {
@@ -45,7 +48,7 @@ public class TimeSettingsController implements Initializable {
         timeDTO.setMinutes(minute.getValue());
         timeDTO.setSeconds(second.getValue());
         timeDTO.reset();
-        if(Utils.saveDtoToServer("/api/time", timeDTO)) {
+        if (Utils.saveDtoToServer("/api/time", timeDTO)) {
             mainWindowController.setTimeDTO(timeDTO);
             close();
         }

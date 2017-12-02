@@ -1,25 +1,27 @@
 package com.raspberry.settings;
 
+import com.raspberry.interfaces.LoadingTask;
 import com.raspberry.loading.ServerStateService;
 import com.raspberry.utils.Utils;
-import com.raspberry.interfaces.LoadingTask;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
+/**
+ * Klasa odpowiedzialna za kończenie zapisu ustawień na serwerze
+ */
 public class FinishSavingSettingsTask implements LoadingTask {
 
     private static FinishSavingSettingsTask instance;
-
-    public static FinishSavingSettingsTask getInstance() {
-        if(instance == null)
-            instance = new FinishSavingSettingsTask();
-        return instance;
-    }
-
     private boolean finished = false;
 
     private FinishSavingSettingsTask() {
 
+    }
+
+    public static FinishSavingSettingsTask getInstance() {
+        if (instance == null)
+            instance = new FinishSavingSettingsTask();
+        return instance;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class FinishSavingSettingsTask implements LoadingTask {
     @Override
     public void execute() {
         ServerStateService.getInstance().refreshOverallState();
-        if(SecurityConfigController.getInstance().areSettingsChanged() || NetworkConfigController.getInstance().areSettingsChanged()) {
+        if (SecurityConfigController.getInstance().areSettingsChanged() || NetworkConfigController.getInstance().areSettingsChanged()) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
@@ -45,8 +47,7 @@ public class FinishSavingSettingsTask implements LoadingTask {
                 Utils.performActionOnServer("/rebootServer");
                 System.exit(0);
             });
-        }
-        else finished = true;
+        } else finished = true;
     }
 
     @Override

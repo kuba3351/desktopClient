@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-
-<AnchorPane prefHeight="234.0" prefWidth="192.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label layoutX="14.0" layoutY="14.0" text="Ustaw czas:" />
-      <Label layoutX="14.0" layoutY="57.0" text="Godziny:" />
-      <Label layoutX="17.0" layoutY="98.0" text="Minuty:" />
-      <Label layoutX="13.0" layoutY="140.0" text="Sekundy:" />
-      <Spinner fx:id="hour" layoutX="74.0" layoutY="52.0" prefHeight="31.0" prefWidth="78.0" />
-      <Spinner fx:id="minute" layoutX="74.0" layoutY="93.0" prefHeight="31.0" prefWidth="78.0" />
-      <Spinner fx:id="second" layoutX="74.0" layoutY="135.0" prefHeight="31.0" prefWidth="78.0" />
-      <Button layoutX="30.0" layoutY="187.0" mnemonicParsing="false" onAction="#onOkButtonClick" text="OK" />
-      <Button layoutX="86.0" layoutY="187.0" mnemonicParsing="false" onAction="#onCancelButtonClick" text="Anuluj" />
-   </children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="234.0" prefWidth="192.0"
+            xmlns="http://javafx.com/javafx/8.0.121">
+    <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Ustaw czas:"/>
+        <Label layoutX="14.0" layoutY="57.0" text="Godziny:"/>
+        <Label layoutX="17.0" layoutY="98.0" text="Minuty:"/>
+        <Label layoutX="13.0" layoutY="140.0" text="Sekundy:"/>
+        <Spinner fx:id="hour" layoutX="74.0" layoutY="52.0" prefHeight="31.0" prefWidth="78.0"/>
+        <Spinner fx:id="minute" layoutX="74.0" layoutY="93.0" prefHeight="31.0" prefWidth="78.0"/>
+        <Spinner fx:id="second" layoutX="74.0" layoutY="135.0" prefHeight="31.0" prefWidth="78.0"/>
+        <Button layoutX="30.0" layoutY="187.0" mnemonicParsing="false" onAction="#onOkButtonClick" text="OK"/>
+        <Button layoutX="86.0" layoutY="187.0" mnemonicParsing="false" onAction="#onCancelButtonClick" text="Anuluj"/>
+    </children>
 </AnchorPane>

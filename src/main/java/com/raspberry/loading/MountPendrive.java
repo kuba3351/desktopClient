@@ -6,19 +6,22 @@ import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
+/**
+ * Klasa odpowiedzialna za montowanie pendrive'a podłączonego do serwera
+ */
 public class MountPendrive implements LoadingTask {
 
     private static MountPendrive instance;
     private volatile boolean finished = false;
 
-    public static MountPendrive getInstance() {
-        if(instance == null)
-            instance = new MountPendrive();
-        return instance;
-    }
-
     private MountPendrive() {
 
+    }
+
+    public static MountPendrive getInstance() {
+        if (instance == null)
+            instance = new MountPendrive();
+        return instance;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class MountPendrive implements LoadingTask {
 
     @Override
     public void execute() {
-        if(!Utils.performActionOnServer("/api/mountPendrive")) {
+        if (!Utils.performActionOnServer("/api/mountPendrive")) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
@@ -43,8 +46,7 @@ public class MountPendrive implements LoadingTask {
                 alert.showAndWait();
                 finished = true;
             });
-        }
-        else finished = true;
+        } else finished = true;
     }
 
     @Override

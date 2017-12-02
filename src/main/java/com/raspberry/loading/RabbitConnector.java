@@ -1,6 +1,8 @@
 package com.raspberry.loading;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import com.raspberry.interfaces.LoadingTask;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -8,6 +10,9 @@ import javafx.scene.control.Alert;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Klasa odpowiedzialna za połączenie z RabbitMQ
+ */
 public class RabbitConnector implements LoadingTask {
 
     private static RabbitConnector instance;
@@ -16,18 +21,18 @@ public class RabbitConnector implements LoadingTask {
 
     private Channel channel;
 
-    public static RabbitConnector getInstance() {
-        if(instance == null)
-            instance = new RabbitConnector();
-        return instance;
-    }
-
     private RabbitConnector() {
 
     }
 
+    public static RabbitConnector getInstance() {
+        if (instance == null)
+            instance = new RabbitConnector();
+        return instance;
+    }
+
     public void send(String message) throws IOException {
-        System.out.println("Sending "+message);
+        System.out.println("Sending " + message);
         channel.basicPublish("", "test2", null, message.getBytes());
     }
 

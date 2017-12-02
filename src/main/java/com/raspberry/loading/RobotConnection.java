@@ -6,24 +6,23 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
+/**
+ * Klasa odpowiedzialna za połączenie z robotem
+ */
 public class RobotConnection implements LoadingTask {
 
     private static RobotConnection instance;
 
     private volatile boolean finished = false;
 
-    public void setFinished(boolean finished) {
-        this.finished = finished;
+    private RobotConnection() {
+
     }
 
     public static RobotConnection getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new RobotConnection();
         return instance;
-    }
-
-    private RobotConnection() {
-
     }
 
     @Override
@@ -38,7 +37,7 @@ public class RobotConnection implements LoadingTask {
 
     @Override
     public void execute() {
-        if(!Utils.performActionOnServer("/api/robot/connectToRobot")) {
+        if (!Utils.performActionOnServer("/api/robot/connectToRobot")) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
@@ -47,18 +46,21 @@ public class RobotConnection implements LoadingTask {
                 alert.getButtonTypes().clear();
                 alert.getButtonTypes().addAll(new ButtonType("Tak"), new ButtonType("Nie"));
                 ButtonType response = alert.showAndWait().orElse(new ButtonType(("Nie")));
-                if(response.getText().equals("Tak"))
+                if (response.getText().equals("Tak"))
                     Utils.openNewWindow("/fxml/ipAddress.fxml",
                             new RobotIpWindowController(), "Podaj adres ip",
                             false, true, null);
                 else finished = true;
             });
-        }
-        else finished = true;
+        } else finished = true;
     }
 
     @Override
     public boolean isFinished() {
         return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }

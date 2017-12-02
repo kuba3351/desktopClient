@@ -7,12 +7,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Klasa odpowiedzialna za okienko do wpisania adresu Ip robota
+ */
 public class RobotIpWindowController {
     @FXML
     private TextField ipTextField;
 
     private void close() {
-        ((Stage)ipTextField.getScene().getWindow()).close();
+        ((Stage) ipTextField.getScene().getWindow()).close();
     }
 
     public void onCancelButtonClick() {
@@ -23,11 +26,10 @@ public class RobotIpWindowController {
     public void onOkButtonClick() {
         RobotIpDTO robotIpDTO = new RobotIpDTO();
         robotIpDTO.setIp(ipTextField.getText());
-        if(Utils.saveDtoToServer("/api/robot/connectToRobot", robotIpDTO)) {
+        if (Utils.saveDtoToServer("/api/robot/connectToRobot", robotIpDTO)) {
             RobotConnection.getInstance().setFinished(true);
             close();
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Błąd");
             alert.setHeaderText("Łączenie z robotem");

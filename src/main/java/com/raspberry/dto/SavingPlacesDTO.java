@@ -1,12 +1,13 @@
 package com.raspberry.dto;
 
 /**
- * Created by jakub on 09.08.17.
+ * Klasa służąca do transferu ustawień miejsc zapisu
  */
 public class SavingPlacesDTO {
+
     private Boolean jpgComputerSave;
     private String jpgComputerLocation;
-    private Boolean jpgRaspberryPendriveSave;
+    private Boolean jpgPendriveSave;
     private Boolean jpgDatabaseSave;
     private DatabaseConfigDTO databaseConfig;
     private Boolean matPendriveSave;
@@ -28,12 +29,12 @@ public class SavingPlacesDTO {
         this.jpgComputerLocation = jpgComputerLocation;
     }
 
-    public Boolean getJpgRaspberryPendriveSave() {
-        return jpgRaspberryPendriveSave;
+    public Boolean getJpgPendriveSave() {
+        return jpgPendriveSave;
     }
 
-    public void setJpgRaspberryPendriveSave(Boolean jpgRaspberryPendriveSave) {
-        this.jpgRaspberryPendriveSave = jpgRaspberryPendriveSave;
+    public void setJpgPendriveSave(Boolean jpgPendriveSave) {
+        this.jpgPendriveSave = jpgPendriveSave;
     }
 
     public Boolean getJpgDatabaseSave() {

@@ -1,5 +1,8 @@
 package com.raspberry.dto;
 
+/**
+ * Klasa służąca do transferu informacji uwierzytelniających
+ */
 public class UsernameAndPasswordDTO {
     private Boolean enabled;
     private String username;

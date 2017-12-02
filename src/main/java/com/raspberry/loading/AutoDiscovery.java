@@ -4,28 +4,30 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Enumeration;
 
+/**
+ * Klasa odpowiedzialna za wyszukowanie serwera w sieci
+ */
 public class AutoDiscovery {
 
+    private static AutoDiscovery instance;
     private String raspberryIpAddress;
 
-    private static AutoDiscovery instance;
+    private AutoDiscovery() {
 
-    public static AutoDiscovery getInstance() {
-        if(instance == null)
-            instance = new AutoDiscovery();
-        return instance;
     }
 
-    public void setRaspberryIpAddress(String raspberryIpAddress) {
-        this.raspberryIpAddress = raspberryIpAddress;
+    public static AutoDiscovery getInstance() {
+        if (instance == null)
+            instance = new AutoDiscovery();
+        return instance;
     }
 
     public String getRaspberryIpAddress() {
         return raspberryIpAddress;
     }
 
-    private AutoDiscovery() {
-
+    public void setRaspberryIpAddress(String raspberryIpAddress) {
+        this.raspberryIpAddress = raspberryIpAddress;
     }
 
     public void findRaspberryIp() {
@@ -41,7 +43,7 @@ public class AutoDiscovery {
             }
             Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = (NetworkInterface)interfaces.nextElement();
+                NetworkInterface networkInterface = (NetworkInterface) interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue;
                 }

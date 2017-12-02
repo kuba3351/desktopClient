@@ -6,6 +6,9 @@ import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
+/**
+ * Klasa odpowiedzialna za sprawdzenie stanu systemu na serwerze i powiadomienie gdy coś jest nie tak
+ */
 public class ServerStateService implements LoadingTask {
 
     private static ServerStateService instance;
@@ -41,29 +44,21 @@ public class ServerStateService implements LoadingTask {
     public void execute() {
         refreshOverallState();
         Platform.runLater(() -> {
-            if(overalStateDTO.getHotspotEnabled()) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Informacja");
-                alert.setHeaderText("Tryb hotspota");
-                alert.setContentText("Raspberry znajduje się w trybie hotspota.\n" +
-                        "Aby wyjść z trybu hotspota i przyłączyć raspberry do istniejącej sieci, otwórz ustawienia.");
-                alert.showAndWait();
-            }
-            if(overalStateDTO.getCameras() == 1) {
+            if (overalStateDTO.getCameras() == 1) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
                 alert.setHeaderText("Detekcja podłączonych kamer");
                 alert.setContentText("Wykryto tylko jedną podłączoną kamerę.\nJeśli nie podłączyłeś drugiej kamery, możesz zignorować ostrzeżenie.\n Jeśli podłączyłeś dwie kamery, może to oznaczać uszkodzenie jednej z kamer lub awarię systemu.");
                 alert.showAndWait();
             }
-            if(overalStateDTO.getCameras() == 0) {
+            if (overalStateDTO.getCameras() == 0) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ostrzeżenie");
                 alert.setHeaderText("Detekcja podłączonych kamer");
                 alert.setContentText("Nie wykryto żadnych podłączonych kamer. Funkcja robienia zdjęć może nie działać.");
                 alert.showAndWait();
             }
-            if(overalStateDTO.getPendriveEnabled() && !overalStateDTO.getPendriveConnected()) {
+            if (overalStateDTO.getPendriveEnabled() && !overalStateDTO.getPendriveConnected()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
                 alert.setHeaderText("Sprawdzanie pendrive");

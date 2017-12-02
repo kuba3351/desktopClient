@@ -15,7 +15,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class HelloController implements Initializable{
+/**
+ * Klasa odpowiedzialna za obsługę okienek zawierających pasek postępu
+ */
+public class HelloController implements Initializable {
 
     @FXML
     private ImageView splashImage;
@@ -39,7 +42,7 @@ public class HelloController implements Initializable{
     }
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        if(haveSplashImage) {
+        if (haveSplashImage) {
             splashImage.setImage(new Image(HelloController.class
                     .getResourceAsStream("/images/raspberry.jpg")));
         }
@@ -50,10 +53,10 @@ public class HelloController implements Initializable{
                 e.printStackTrace();
             }
             tasks.forEach(loadingTask -> {
-                if(loadingTask.shouldBeExecuted()) {
+                if (loadingTask.shouldBeExecuted()) {
                     Platform.runLater(() -> {
                         taskLabel.setText(loadingTask.getTaskName());
-                        loadingProgress.setProgress(((double)tasks.indexOf(loadingTask) + 1d) / (double)tasks.size());
+                        loadingProgress.setProgress(((double) tasks.indexOf(loadingTask) + 1d) / (double) tasks.size());
                     });
                     loadingTask.execute();
                     while (!loadingTask.isFinished()) {
@@ -62,7 +65,7 @@ public class HelloController implements Initializable{
                 }
             });
             Platform.runLater(() -> {
-                ((Stage)taskLabel.getScene().getWindow()).close();
+                ((Stage) taskLabel.getScene().getWindow()).close();
                 callback.callback();
             });
         });

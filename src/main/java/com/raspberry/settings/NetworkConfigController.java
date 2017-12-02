@@ -1,11 +1,11 @@
 package com.raspberry.settings;
 
 import com.google.gson.internal.LinkedTreeMap;
-import com.raspberry.loading.ServerStateService;
-import com.raspberry.utils.Utils;
 import com.raspberry.dto.NetworkDTO;
 import com.raspberry.interfaces.Clearable;
 import com.raspberry.interfaces.LoadingTask;
+import com.raspberry.loading.ServerStateService;
+import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -21,41 +21,35 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Kontroler ustawień sieci wi-fi
+ */
 public class NetworkConfigController implements Initializable, LoadingTask, Clearable {
 
+    private static NetworkConfigController instance;
     @FXML
     private CheckBox hotspotMode;
-
     @FXML
     private TableView<LinkedTreeMap> visibleWifi;
-
     @FXML
     private Label networkName;
-
     @FXML
     private PasswordField password;
-
     @FXML
     private Label settingsChangedLabel;
-
     private volatile boolean finished = false;
-
     private NetworkDTO networkDTO;
-
     private List<LinkedTreeMap> networkViewDTOS;
-
     private Boolean hotspotEnabled;
-
-    private static NetworkConfigController instance;
-
-    public static NetworkConfigController getInstance() {
-        if(instance == null)
-            instance = new NetworkConfigController();
-        return instance;
-    }
 
     private NetworkConfigController() {
 
+    }
+
+    public static NetworkConfigController getInstance() {
+        if (instance == null)
+            instance = new NetworkConfigController();
+        return instance;
     }
 
     @Override
@@ -116,24 +110,23 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
 
     @Override
     public String getTaskName() {
-        if(networkDTO == null)
+        if (networkDTO == null)
             return "Wczytuję konfigurację sieci...";
-        else if(hotspotMode.isSelected())
+        else if (hotspotMode.isSelected())
             return "Stawiam hotspota...";
         else return "Przełączam do innej sieci...";
     }
 
     @Override
     public void execute() {
-        if(networkDTO == null) {
+        if (networkDTO == null) {
             networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
             hotspotEnabled = ServerStateService.getInstance().getOveralStateDTO().getHotspotEnabled();
             networkViewDTOS = (ArrayList<LinkedTreeMap>) Utils.getDTOFromServer("/api/network/checkAvailableWifi", ArrayList.class);
             finished = true;
-        }
-        else {
+        } else {
             networkDTO.setHotspot(hotspotMode.isSelected());
-            if(!Utils.saveDtoToServer("/api/network", networkDTO)) {
+            if (!Utils.saveDtoToServer("/api/network", networkDTO)) {
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Błąd");
@@ -142,8 +135,7 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
                     alert.showAndWait();
                     finished = true;
                 });
-            }
-            else finished = true;
+            } else finished = true;
         }
     }
 
@@ -153,7 +145,7 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
     }
 
     public void onRefreshNetworksButtonClick() throws MalformedURLException {
-        networkDTO = (NetworkDTO)Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
+        networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
         visibleWifi.getItems().clear();
         initialize(new URL("http://"), new ResourceBundle() {
             @Override

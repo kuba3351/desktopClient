@@ -1,10 +1,8 @@
 package com.raspberry.settings;
 
 import com.raspberry.DatabaseType;
-import com.raspberry.utils.Utils;
 import com.raspberry.dto.DatabaseConfigDTO;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.raspberry.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
@@ -17,45 +15,40 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+/**
+ * Kontroler ustawień bazy danych
+ */
 public class DatabaseSettingsController implements Initializable {
 
+    private static DatabaseSettingsController instance;
     @FXML
     private ChoiceBox<DatabaseType> databaseType;
-
     @FXML
     private TextField host;
-
     @FXML
     private TextField port;
-
     @FXML
     private TextField databaseName;
-
     @FXML
     private TextField userName;
-
     @FXML
     private PasswordField password;
-
     @FXML
     private Label settingsChangedLabel;
-
     private DatabaseConfigDTO databaseConfigDTO;
 
-    private static DatabaseSettingsController instance;
+    private DatabaseSettingsController() {
 
-    public Label getSettingsChangedLabel() {
-        return settingsChangedLabel;
     }
 
     public static DatabaseSettingsController getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new DatabaseSettingsController();
         return instance;
     }
 
-    private DatabaseSettingsController() {
-
+    public Label getSettingsChangedLabel() {
+        return settingsChangedLabel;
     }
 
     public DatabaseConfigDTO getDatabaseConfigDTO() {

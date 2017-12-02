@@ -1,25 +1,28 @@
 package com.raspberry.loading;
 
-import com.raspberry.utils.Utils;
 import com.raspberry.dto.OveralStateDTO;
 import com.raspberry.interfaces.LoadingTask;
+import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
+/**
+ * Klasa odpowiedzialna za połączenie z bazą danych
+ */
 public class DatabaseConnector implements LoadingTask {
 
     private static DatabaseConnector instance;
 
     private volatile boolean finished = false;
 
-    public static DatabaseConnector getInstance() {
-        if(instance == null)
-            instance = new DatabaseConnector();
-        return instance;
-    }
-
     private DatabaseConnector() {
 
+    }
+
+    public static DatabaseConnector getInstance() {
+        if (instance == null)
+            instance = new DatabaseConnector();
+        return instance;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class DatabaseConnector implements LoadingTask {
 
     @Override
     public void execute() {
-        if(!Utils.performActionOnServer("/api/connectToDatabase")) {
+        if (!Utils.performActionOnServer("/api/connectToDatabase")) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");
@@ -45,8 +48,7 @@ public class DatabaseConnector implements LoadingTask {
                 alert.showAndWait();
                 finished = true;
             });
-        }
-        else finished = true;
+        } else finished = true;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.raspberry.dto;
 
+/**
+ * Klasa służąca do transferu listy sieci wi-fi
+ */
 public class NetworkViewDTO {
     private String ssid;
     private String bars;

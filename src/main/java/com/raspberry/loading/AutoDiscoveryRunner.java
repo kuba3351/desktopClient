@@ -1,30 +1,27 @@
 package com.raspberry.loading;
 
-import com.raspberry.utils.Utils;
 import com.raspberry.interfaces.LoadingTask;
+import com.raspberry.utils.Utils;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
-
+/**
+ * Klasa odpowiedzialna za uruchamianie automatycznego wyszukiwania serwera w sieci oraz obsługę błędów
+ */
 public class AutoDiscoveryRunner implements LoadingTask {
 
     private static AutoDiscoveryRunner instance;
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-
     private volatile boolean finished = false;
-
-    public static AutoDiscoveryRunner getInstance() {
-        if(instance == null)
-            instance = new AutoDiscoveryRunner();
-        return instance;
-    }
 
     private AutoDiscoveryRunner() {
 
+    }
+
+    public static AutoDiscoveryRunner getInstance() {
+        if (instance == null)
+            instance = new AutoDiscoveryRunner();
+        return instance;
     }
 
     @Override
@@ -41,7 +38,7 @@ public class AutoDiscoveryRunner implements LoadingTask {
     public void execute() {
         final AutoDiscovery autoDiscovery = AutoDiscovery.getInstance();
         Thread thread;
-        for(int i = 0;i<3&&autoDiscovery.getRaspberryIpAddress() == null;i++) {
+        for (int i = 0; i < 3 && autoDiscovery.getRaspberryIpAddress() == null; i++) {
             thread = new Thread(autoDiscovery::findRaspberryIp);
             thread.start();
             try {
@@ -51,7 +48,7 @@ public class AutoDiscoveryRunner implements LoadingTask {
             }
             thread.stop();
         }
-        if(autoDiscovery.getRaspberryIpAddress() == null) {
+        if (autoDiscovery.getRaspberryIpAddress() == null) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.getButtonTypes().clear();
@@ -67,19 +64,22 @@ public class AutoDiscoveryRunner implements LoadingTask {
                     System.exit(0);
                     return new ButtonType("");
                 });
-                if(response.getText().equals("Tak"))
+                if (response.getText().equals("Tak"))
                     Utils.openNewWindow("/fxml/ipAddress.fxml",
                             new RaspberryIpWindowController(), "Podaj adres ip",
                             false, true, null);
                 else
                     System.exit(0);
             });
-        }
-        else finished = true;
+        } else finished = true;
     }
 
     @Override
     public boolean isFinished() {
         return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }

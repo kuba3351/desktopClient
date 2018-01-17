@@ -1,19 +1,17 @@
 package com.raspberry.dto;
 
+import com.raspberry.CameraType;
+
 /**
  * Klasa służąca do transferu ustawień rozdzielczości zdjęcia
  */
-public class PhotoResolutionDTO {
+public class PhotoDTO {
+
     private int width;
     private int heigth;
+    private CameraType cameraType;
 
-    public PhotoResolutionDTO() {
-
-    }
-
-    public PhotoResolutionDTO(int width, int heigth) {
-        this.width = width;
-        this.heigth = heigth;
+    public PhotoDTO() {
     }
 
     @Override
@@ -21,10 +19,10 @@ public class PhotoResolutionDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PhotoResolutionDTO that = (PhotoResolutionDTO) o;
+        PhotoDTO photoDTO = (PhotoDTO) o;
 
-        if (width != that.width) return false;
-        return heigth == that.heigth;
+        if (width != photoDTO.width) return false;
+        return heigth == photoDTO.heigth;
     }
 
     @Override
@@ -32,6 +30,19 @@ public class PhotoResolutionDTO {
         int result = width;
         result = 31 * result + heigth;
         return result;
+    }
+
+    public PhotoDTO(int width, int heigth) {
+        this.width = width;
+        this.heigth = heigth;
+    }
+
+    public CameraType getCameraType() {
+        return cameraType;
+    }
+
+    public void setCameraType(CameraType cameraType) {
+        this.cameraType = cameraType;
     }
 
     public int getWidth() {

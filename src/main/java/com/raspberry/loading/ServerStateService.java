@@ -44,20 +44,6 @@ public class ServerStateService implements LoadingTask {
     public void execute() {
         refreshOverallState();
         Platform.runLater(() -> {
-            if (overalStateDTO.getCameras() == 1) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Ostrzeżenie");
-                alert.setHeaderText("Detekcja podłączonych kamer");
-                alert.setContentText("Wykryto tylko jedną podłączoną kamerę.\nJeśli nie podłączyłeś drugiej kamery, możesz zignorować ostrzeżenie.\n Jeśli podłączyłeś dwie kamery, może to oznaczać uszkodzenie jednej z kamer lub awarię systemu.");
-                alert.showAndWait();
-            }
-            if (overalStateDTO.getCameras() == 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ostrzeżenie");
-                alert.setHeaderText("Detekcja podłączonych kamer");
-                alert.setContentText("Nie wykryto żadnych podłączonych kamer. Funkcja robienia zdjęć może nie działać.");
-                alert.showAndWait();
-            }
             if (overalStateDTO.getPendriveEnabled() && !overalStateDTO.getPendriveConnected()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");

@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/8.0.162-ea">
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label layoutX="21.0" layoutY="22.0" text="Rozdzielczość zdjęć:"/>
-        <ChoiceBox fx:id="resolution" layoutX="161.0" layoutY="17.0" prefHeight="26.0" prefWidth="286.0"/>
-        <CheckBox fx:id="autoPhotos" layoutX="21.0" layoutY="53.0" mnemonicParsing="false"
-                  text="Rób zdjęcia w odległości od przeszkody:"/>
-        <Spinner fx:id="autoPhotosDist" layoutX="311.0" layoutY="49.0" prefHeight="26.0" prefWidth="90.0"/>
-        <Label layoutX="412.0" layoutY="54.0" text="m"/>
-        <Label fx:id="settingsChangedLabel" layoutX="52.0" layoutY="119.0"
-               text="Ustawienia zostały zmienione. Kliknij &quot;Ok&quot; lub &quot;Zastosuj&quot; aby zapisać"/>
+        <Label layoutX="21.0" layoutY="22.0" text="Rozdzielczość zdjęć:" />
+        <ChoiceBox fx:id="resolution" layoutX="161.0" layoutY="17.0" prefHeight="26.0" prefWidth="286.0" />
+        <CheckBox fx:id="autoPhotos" layoutX="18.0" layoutY="53.0" mnemonicParsing="false" text="Rób zdjęcia w odległości od przeszkody:" />
+        <Spinner fx:id="autoPhotosDist" layoutX="311.0" layoutY="49.0" prefHeight="26.0" prefWidth="90.0" />
+        <Label layoutX="412.0" layoutY="54.0" text="cm" />
+        <Label fx:id="settingsChangedLabel" layoutX="24.0" layoutY="319.0" text="Ustawienia zostały zmienione. Kliknij &quot;Ok&quot; lub &quot;Zastosuj&quot; aby zapisać" />
+      <Label layoutX="21.0" layoutY="147.0" prefHeight="16.0" prefWidth="158.0" text="Port silnika lewego koła:" />
+      <Label layoutX="22.0" layoutY="175.0" prefHeight="16.0" prefWidth="172.0" text="Port silnika prawego koła:" />
+      <Label layoutX="21.0" layoutY="199.0" prefHeight="16.0" prefWidth="158.0" text="Port czujnika odległości" />
+      <ChoiceBox fx:id="left" layoutX="193.0" layoutY="142.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="right" layoutX="193.0" layoutY="170.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="distanceSensor" layoutX="193.0" layoutY="194.0" prefWidth="150.0" />
+      <Label layoutX="22.0" layoutY="85.0" text="Rodzaj podłączonych kamer:" />
+      <ChoiceBox fx:id="cameraTypes" layoutX="210.0" layoutY="80.0" prefWidth="150.0" />
+      <CheckBox fx:id="connect" layoutX="22.0" layoutY="115.0" mnemonicParsing="false" text="Łącz się z robotem" />
+      <CheckBox fx:id="stopRobot" layoutX="24.0" layoutY="229.0" mnemonicParsing="false" text="Zatrzymuj robota w czasie robienia zdjęć" />
     </children>
 </AnchorPane>

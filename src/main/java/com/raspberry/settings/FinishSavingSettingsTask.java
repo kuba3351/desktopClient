@@ -37,7 +37,7 @@ public class FinishSavingSettingsTask implements LoadingTask {
     @Override
     public void execute() {
         ServerStateService.getInstance().refreshOverallState();
-        if (SecurityConfigController.getInstance().areSettingsChanged() || NetworkConfigController.getInstance().areSettingsChanged()) {
+        if (SecurityConfigController.getInstance().areSettingsChanged() || NetworkConfigController.getInstance().areSettingsChanged() || OtherSettingsController.getInstance().isImportantSettingsChanged()) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Ostrzeżenie");

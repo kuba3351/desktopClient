@@ -86,10 +86,12 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
         });
 
         visibleWifi.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> {
-            String name = networkViewDTOS.get(t1.intValue()).get("ssid").toString();
-            networkName.setText(name);
-            networkDTO.setSsid(name);
-            settingsChanged();
+                if(!t1.equals(-1)) {
+                    String name = networkViewDTOS.get(t1.intValue()).get("ssid").toString();
+                    networkName.setText(name);
+                    networkDTO.setSsid(name);
+                    settingsChanged();
+                }
         });
         visibleWifi.getColumns().clear();
         visibleWifi.getColumns().addAll(ssid, bars, security);
@@ -101,6 +103,9 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
         });
         hotspotMode.setSelected(hotspotEnabled);
         hotspotMode.selectedProperty().addListener((observableValue, aBoolean, t1) -> settingsChanged());
+        if(!networkDTO.getHotspot())
+            visibleWifi.getItems().stream().filter(item -> item.get("ssid").equals(networkDTO.getSsid())).findFirst().ifPresent(item -> visibleWifi.getSelectionModel().select(item));
+        settingsChangedLabel.setVisible(false);
     }
 
     @Override
@@ -120,7 +125,7 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
     @Override
     public void execute() {
         if (networkDTO == null) {
-            networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
+            networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network", NetworkDTO.class);
             hotspotEnabled = ServerStateService.getInstance().getOveralStateDTO().getHotspotEnabled();
             networkViewDTOS = (ArrayList<LinkedTreeMap>) Utils.getDTOFromServer("/api/network/checkAvailableWifi", ArrayList.class);
             finished = true;
@@ -145,7 +150,7 @@ public class NetworkConfigController implements Initializable, LoadingTask, Clea
     }
 
     public void onRefreshNetworksButtonClick() throws MalformedURLException {
-        networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network/getNetworkInfo", NetworkDTO.class);
+        networkDTO = (NetworkDTO) Utils.getDTOFromServer("/api/network", NetworkDTO.class);
         visibleWifi.getItems().clear();
         initialize(new URL("http://"), new ResourceBundle() {
             @Override

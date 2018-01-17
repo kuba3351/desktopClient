@@ -1,5 +1,6 @@
 package com.raspberry.loading;
 
+import com.raspberry.dto.OveralStateDTO;
 import com.raspberry.interfaces.LoadingTask;
 import com.raspberry.utils.Utils;
 import javafx.application.Platform;
@@ -27,7 +28,8 @@ public class RobotConnection implements LoadingTask {
 
     @Override
     public boolean shouldBeExecuted() {
-        return !ServerStateService.getInstance().getOveralStateDTO().getRobotConnected();
+        OveralStateDTO overalStateDTO = ServerStateService.getInstance().getOveralStateDTO();
+        return !overalStateDTO.getRobotConnected() && overalStateDTO.getConnectRobotEnabled();
     }
 
     @Override

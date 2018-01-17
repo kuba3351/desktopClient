@@ -34,7 +34,7 @@ public class AutoDiscovery {
         try {
             DatagramSocket c = new DatagramSocket();
             c.setBroadcast(true);
-            byte[] sendData = "DISCOVER_FUIFSERVER_REQUEST".getBytes();
+            byte[] sendData = "DISCOVER_REQUEST".getBytes();
             try {
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 9000);
                 c.send(sendPacket);
@@ -64,7 +64,7 @@ public class AutoDiscovery {
             DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
             c.receive(receivePacket);
             String message = new String(receivePacket.getData()).trim();
-            if (message.equals("DISCOVER_FUIFSERVER_RESPONSE")) {
+            if (message.equals("DISCOVER_RESPONSE")) {
                 raspberryIpAddress = receivePacket.getAddress().getHostAddress();
             }
             c.close();

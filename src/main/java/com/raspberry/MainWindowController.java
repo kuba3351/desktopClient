@@ -103,7 +103,7 @@ public class MainWindowController implements Initializable {
         preview1.setVisible(false);
         preview2.setVisible(false);
         Thread thread = new Thread(() -> {
-            ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/takePhoto"));
+            ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/photo/takePhoto"));
             showPreview(zipInputStream);
         });
         thread.start();
@@ -208,6 +208,7 @@ public class MainWindowController implements Initializable {
     }
 
     public void onStartPhoto() {
+        timeDTO.reset();
         Platform.runLater(() -> {
             photoLabel.setVisible(false);
             preview1.setVisible(false);
@@ -217,8 +218,7 @@ public class MainWindowController implements Initializable {
     }
 
     public void onPhotoFinished() {
-        timeDTO.reset();
-        ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/takePhoto"));
+        ZipInputStream zipInputStream = new ZipInputStream(Utils.getInputStreamFromServer("/api/photo/getLastPhotos"));
         showPreview(zipInputStream);
     }
 

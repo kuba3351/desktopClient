@@ -41,21 +41,21 @@ public class EventListener implements Consumer {
 
     @Override
     public void handleDelivery(String s, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] bytes) throws IOException {
-        String string = new String(bytes);
-        if(string.startsWith("[ERROR]")) {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Błąd");
-                alert.setHeaderText("Błąd zapisu danych");
-                alert.setContentText(string.substring(7));
-                alert.show();
-            });
-        }
         MainWindowController controller = MainWindowController.getInstance();
         if (controller.isInitialized()) {
+            String string = new String(bytes);
+            if (string.startsWith("[ERROR]")) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Błąd");
+                    alert.setHeaderText("Błąd zapisu danych");
+                    alert.setContentText(string.substring(7));
+                    alert.show();
+                });
+            }
             if (string.equals("Taking photo..."))
                 controller.onStartPhoto();
-            else if (string.equals("Photo taken!"))
+            if (string.equals("Photo taken!"))
                 controller.onPhotoFinished();
         }
     }

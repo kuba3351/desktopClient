@@ -63,8 +63,6 @@ public class SavingPlacesSettingsController implements Initializable, LoadingTas
         onSettingsChanges();
         DirectoryChooser directoryChooser = new DirectoryChooser();
         String jpgComputerLocation = savingPlacesDTO.getJpgComputerLocation();
-        if (jpgComputerLocation != null)
-            directoryChooser.setInitialDirectory(new File(jpgComputerLocation));
         directoryChooser.setTitle("Wybierz folder");
         File directory = directoryChooser.showDialog(new Stage());
         if (directory != null)

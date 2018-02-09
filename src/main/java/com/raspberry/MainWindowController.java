@@ -151,8 +151,8 @@ public class MainWindowController implements Initializable {
                 separator = "\\";
             try {
                 String date = LocalDateTime.now().toString();
-                ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera1.jpg"));
-                ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation + separator + date + "-camera2.jpg"));
+                ImageIO.write(SwingFXUtils.fromFXImage(preview1.getImage(), null), "jpg", new File(jpgLocation + separator + date.replace(":", "-") + "-camera1.jpg"));
+                ImageIO.write(SwingFXUtils.fromFXImage(preview2.getImage(), null), "jpg", new File(jpgLocation + separator + date.replace(":", "-") + "-camera2.jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
